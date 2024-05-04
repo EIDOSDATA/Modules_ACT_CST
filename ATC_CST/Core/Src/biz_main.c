@@ -14,6 +14,8 @@
 #include "biz_uart.h"
 #include "biz_main.h"
 
+#define DUMMY() dummy_fnc();
+#define CST_HARDCODING_ADDR 0x0001
 Cst_Struct Cst;
 
 #if 0
@@ -44,7 +46,6 @@ uint32_t mean_ch1;
 uint32_t mean_ch2;
 uint32_t mean_ch3;
 
-#define DUMMY() dummy_fnc();
 
 void Motor_On(void)
 {
