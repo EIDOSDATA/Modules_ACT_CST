@@ -81,6 +81,7 @@ static void MX_NVIC_Init(void);
  */
 int main(void)
 {
+
 	/* USER CODE BEGIN 1 */
 
 	/* USER CODE END 1 */
@@ -132,19 +133,19 @@ int main(void)
 	{
 
 		Uart_Buffer_Debug();
+		/*
+		 uint8_t buf[100];
 
-//	  uint8_t buf[100];
-//
-//	  HAL_Delay(1000);
-//	  HAL_GPIO_WritePin(TX_EN_GPIO_Port,TX_EN_Pin,SET);
-//	  HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-//
-//
-//	  sprintf(buf,"test!!!\r\n");
-//
-//	  HAL_UART_Transmit(&hlpuart1, buf, strlen(buf), 100);
-//	  HAL_UART_Transmit(&huart2, buf, strlen(buf), 100);
-//	  HAL_GPIO_WritePin(TX_EN_GPIO_Port,TX_EN_Pin,RESET);
+		 HAL_Delay(1000);
+		 HAL_GPIO_WritePin(TX_EN_GPIO_Port, TX_EN_Pin, SET);
+		 HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+
+		 sprintf(buf, "test!!!\r\n");
+
+		 HAL_UART_Transmit(&hlpuart1, buf, strlen(buf), 100);
+		 HAL_UART_Transmit(&huart2, buf, strlen(buf), 100);
+		 HAL_GPIO_WritePin(TX_EN_GPIO_Port, TX_EN_Pin, RESET);
+		 */
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -215,6 +216,12 @@ static void MX_NVIC_Init(void)
 	/* USART2_IRQn interrupt configuration */
 	HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(USART2_IRQn);
+	/* ADC1_COMP_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(ADC1_COMP_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ(ADC1_COMP_IRQn);
+	/* TIM2_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(TIM2_IRQn, 2, 0);
+	HAL_NVIC_EnableIRQ(TIM2_IRQn);
 }
 
 /* USER CODE BEGIN 4 */
