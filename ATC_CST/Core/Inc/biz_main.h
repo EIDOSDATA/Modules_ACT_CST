@@ -10,8 +10,6 @@
 
 #define MY_ADDR 1
 
-
-
 //=============422 CMD LIST
 #define CMD_DISPENSE 		0x0000
 #define CMD_DISPENSE_CHK 	0x1000
@@ -23,8 +21,6 @@
 #define STU_DISPENSE_OK		0x02
 #define STU_DISPENSE_ERROR	0x03
 
-
-
 typedef struct
 {
 	uint16_t Addr;
@@ -32,10 +28,30 @@ typedef struct
 	uint8_t Target_num;		//배출 알약 갯수
 	uint8_t Cur_num;		//현재 배출 된 알약
 	uint32_t Run_time;		//배출 시작 시간
-}Cst_Struct;
-
+} Cst_Struct;
 
 extern Cst_Struct Cst;
 
 extern void biz_loop(void);
+
+/* biz_main FUNCTION */
+void Motor_On(void);
+void Motor_Off(void);
+void Dispense(void);
+void Sensor_On(void);
+void Sensor_Off(void);
+void get_sensor(void);
+
+#if 0
+void delay_nop(unsigned int cnt);
+#else
+int delay_nop(unsigned int cnt);
+#endif
+
+void dummy_fnc(void);
+uint8_t check_dispose(void);
+void Cmd_Runner(void);
+void Cst_setup(void);
+void biz_loop(void);
+
 #endif /* INC_BIZ_MAIN_H_ */

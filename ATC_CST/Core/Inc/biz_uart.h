@@ -13,7 +13,6 @@
 #define TX_DATA_SIZE		100
 #define RX_DATA_SIZE		500
 
-
 /* USER CODE BEGIN Prototypes */
 #define STX_MSB_Check  				0x01
 #define STX_LSB_Check  				0x02
@@ -40,7 +39,6 @@
 
 #define RECV_WAIT_TIME 5
 
-
 typedef struct
 {
 	uint8_t step;
@@ -50,19 +48,16 @@ typedef struct
 	uint16_t Addr;
 	uint8_t data[RX_DATA_SIZE];
 	uint32_t RecvTime;
-}Uart_Rx_data;
+} Uart_Rx_data;
 
 extern Uart_Rx_data Packet;
-
-
-
 
 typedef struct
 {
 	uint16_t CMD;
 	uint16_t Data_len;
 	uint8_t data[TX_DATA_SIZE];
-}Uart_Tx_data;
+} Uart_Tx_data;
 
 extern Uart_Tx_data Tx_Packet;
 extern volatile uint8_t Rx_uart1[UART1_RX_MAXLEN];
@@ -72,5 +67,13 @@ extern volatile uint16_t Rx_uart1_Pcnt;
 extern volatile uint8_t Rx_uart2[UART2_RX_MAXLEN];
 extern volatile uint16_t Rx_uart2_cnt;
 extern volatile uint16_t Rx_uart2_Pcnt;
+
+/* FUCNCTION */
+void Uart_init(void);
+uint16_t Uart_len_Check(void);
+void Uart_Tx_Packet(void);
+uint8_t Uart_read(void);
+void Uart_Parsser(void);
+void Uart_Buffer_Debug(void);
 
 #endif /* INC_BIZ_UART_H_ */
