@@ -193,7 +193,7 @@ void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
 	Rx_uart2[Rx_uart2_cnt++] = (USART2->RDR) & 0x00ff;
-	Packet.RecvTime = HAL_GetTick();
+	Rx_Packet.RecvTime = HAL_GetTick();
 	if (Rx_uart2_cnt == UART2_RX_MAXLEN)
 		Rx_uart2_cnt = 0;
 

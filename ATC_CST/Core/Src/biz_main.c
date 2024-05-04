@@ -260,21 +260,21 @@ void Cmd_Runner(void)
 
 #if 0
 	printf("\r\nPasser END \r\n");
-	printf("Addr = 0x%04X \r\n",Packet.Addr);
-	printf("Cmd = 0x%04X \r\n",Packet.CMD);
-	printf("LEN = %d [dec]\r\n",Packet.Data_len);
-	if(Packet.Data_len != 0)
+	printf("Addr = 0x%04X \r\n",Rx_Packet.Addr);
+	printf("Cmd = 0x%04X \r\n",Rx_Packet.CMD);
+	printf("LEN = %d [dec]\r\n",Rx_Packet.Data_len);
+	if(Rx_Packet.Data_len != 0)
 	{
 		printf("Data[HEX] =");
-		for(uint8_t cnt = 0 ; cnt <Packet.Data_len ; cnt++ )
+		for(uint8_t cnt = 0 ; cnt <Rx_Packet.Data_len ; cnt++ )
 		{
-			printf("%02X ",Packet.data[cnt]);
+			printf("%02X ",Rx_Packet.data[cnt]);
 		}
 		printf("\t\t END \r\n");
 	}
 #endif
 
-	switch (Packet.CMD)
+	switch (Rx_Packet.CMD)
 	{
 	case CMD_DISPENSE:
 	{
@@ -287,7 +287,7 @@ void Cmd_Runner(void)
 		else
 		{
 			Cst.Cur_status = STU_DISPENSE_ING;
-			Cst.Target_num = Packet.data[0];
+			Cst.Target_num = Rx_Packet.data[0];
 			Cst.Cur_num = 0;
 			dispose = 0;				//개선 필요
 			Tx_Packet.data[0] = 0x01;	//ACK
@@ -365,16 +365,16 @@ void biz_loop(void)
 	while (1)
 	{
 		//422 Check
-		if (Packet.status != Uart_End)
+		if (Rx_Packet.status != Uart_End)
 		{
 			Uart_Parsser();
 		}
-		else if (Packet.status == Uart_End)
+		else if (Rx_Packet.status == Uart_End)
 		{
-			if (Packet.Addr == Cst.Addr)
+			if (Rx_Packet.Addr == Cst.Addr)
 				Cmd_Runner();
 			else
-				Packet.status = Uart_WAIT;
+				Rx_Packet.status = Uart_WAIT;
 		}
 
 		//배출 관리

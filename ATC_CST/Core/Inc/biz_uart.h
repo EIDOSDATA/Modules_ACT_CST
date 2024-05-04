@@ -50,7 +50,7 @@ typedef struct
 	uint32_t RecvTime;
 } Uart_Rx_data;
 
-extern Uart_Rx_data Packet;
+extern Uart_Rx_data Rx_Packet;
 
 typedef struct
 {

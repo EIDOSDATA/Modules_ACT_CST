@@ -21,13 +21,13 @@ volatile uint8_t Rx_uart2[UART2_RX_MAXLEN];
 volatile uint16_t Rx_uart2_cnt;
 volatile uint16_t Rx_uart2_Pcnt;
 
-Uart_Rx_data Packet;
+Uart_Rx_data Rx_Packet;
 Uart_Tx_data Tx_Packet;
 
 void Uart_init(void)
 {
-	Packet.status = Uart_WAIT;
-	Packet.step = STX_MSB_Check;
+	Rx_Packet.status = Uart_WAIT;
+	Rx_Packet.step = STX_MSB_Check;
 	Rx_uart2_cnt = 0;
 	Rx_uart2_Pcnt = 0;
 }
@@ -35,7 +35,7 @@ void Uart_init(void)
 uint16_t Uart_len_Check(void)
 {
 
-	if (Packet.RecvTime + RECV_WAIT_TIME <= HAL_GetTick())
+	if (Rx_Packet.RecvTime + RECV_WAIT_TIME <= HAL_GetTick())
 	{
 		if (Rx_uart2_cnt < Rx_uart2_Pcnt)
 		{
@@ -88,7 +88,7 @@ void Uart_Tx_Packet(void)
 	HAL_UART_Transmit(&huart2, Data_Buffer, cnt, 100);
 	HAL_GPIO_WritePin(TX_EN_GPIO_Port, TX_EN_Pin, RESET);
 
-	Packet.status = Uart_WAIT;
+	Rx_Packet.status = Uart_WAIT;
 
 }
 
@@ -113,14 +113,14 @@ void Uart_Parsser(void)
 			HAL_Delay(10);
 			data = Uart_read();
 //			printf("data = 0x%02X\r\n",data);
-			switch (Packet.step)
+			switch (Rx_Packet.step)
 			{
 			case STX_MSB_Check:
 			{
 				if (data == 0xFF)
 				{
-					Packet.step = STX_LSB_Check;
-					Packet.status = Uart_ing;
+					Rx_Packet.step = STX_LSB_Check;
+					Rx_Packet.status = Uart_ing;
 					Data_len = 0;
 				}
 				break;
@@ -129,56 +129,56 @@ void Uart_Parsser(void)
 			{
 				if (data == 0x02)
 				{
-					Packet.step = ADDR_MSB_Check;
+					Rx_Packet.step = ADDR_MSB_Check;
 				}
 				else
 				{
-					Packet.step = STX_MSB_Check;
-					Packet.status = Uart_WAIT;
+					Rx_Packet.step = STX_MSB_Check;
+					Rx_Packet.status = Uart_WAIT;
 				}
 				break;
 			}
 			case ADDR_MSB_Check:
 			{
-				Packet.Addr = data << 8;
-				Packet.step = ADDR_LSB_Check;
+				Rx_Packet.Addr = data << 8;
+				Rx_Packet.step = ADDR_LSB_Check;
 				break;
 			}
 			case ADDR_LSB_Check:
 			{
-				Packet.Addr |= data;
-				Packet.step = LEN_MSB_Check;
+				Rx_Packet.Addr |= data;
+				Rx_Packet.step = LEN_MSB_Check;
 				break;
 			}
 			case LEN_MSB_Check:
 			{
-				Packet.Data_len = data << 8;
-				Packet.step = LEN_LSB_Check;
+				Rx_Packet.Data_len = data << 8;
+				Rx_Packet.step = LEN_LSB_Check;
 				break;
 			}
 			case LEN_LSB_Check:
 			{
-				Packet.Data_len |= data;
-				Packet.step = CMD_MSB_Check;
+				Rx_Packet.Data_len |= data;
+				Rx_Packet.step = CMD_MSB_Check;
 				break;
 			}
 			case CMD_MSB_Check:
 			{
-				Packet.CMD = data << 8;
-				Packet.step = CMD_LSB_Check;
+				Rx_Packet.CMD = data << 8;
+				Rx_Packet.step = CMD_LSB_Check;
 				break;
 			}
 			case CMD_LSB_Check:
 			{
-				Packet.CMD |= data;
+				Rx_Packet.CMD |= data;
 
-				if (Packet.Data_len != 0)
+				if (Rx_Packet.Data_len != 0)
 				{
-					Packet.step = DATA_Check;
+					Rx_Packet.step = DATA_Check;
 				}
 				else
 				{
-					Packet.step = ETX_MSB_Check;
+					Rx_Packet.step = ETX_MSB_Check;
 				}
 				break;
 			}
@@ -186,10 +186,10 @@ void Uart_Parsser(void)
 			case DATA_Check:
 			{
 
-				Packet.data[Data_len++] = data;
-				if (Data_len == Packet.Data_len)
+				Rx_Packet.data[Data_len++] = data;
+				if (Data_len == Rx_Packet.Data_len)
 				{
-					Packet.step = ETX_MSB_Check;
+					Rx_Packet.step = ETX_MSB_Check;
 				}
 				break;
 			}
@@ -197,13 +197,13 @@ void Uart_Parsser(void)
 			{
 				if (data == 0xFF)
 				{
-					Packet.step = ETX_LSB_Check;
+					Rx_Packet.step = ETX_LSB_Check;
 
 				}
 				else
 				{
-					Packet.step = STX_MSB_Check;
-					Packet.status = Uart_WAIT;
+					Rx_Packet.step = STX_MSB_Check;
+					Rx_Packet.status = Uart_WAIT;
 				}
 				break;
 			}
@@ -211,13 +211,13 @@ void Uart_Parsser(void)
 			{
 				if (data == 0x03)
 				{
-					Packet.status = Uart_End;
+					Rx_Packet.status = Uart_End;
 				}
 				else
 				{
-					Packet.status = Uart_WAIT;
+					Rx_Packet.status = Uart_WAIT;
 				}
-				Packet.step = STX_MSB_Check;
+				Rx_Packet.step = STX_MSB_Check;
 				break;
 			}
 			default:
