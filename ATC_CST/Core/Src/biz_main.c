@@ -163,14 +163,15 @@ int delay_nop(unsigned int cnt)
 {
 	for (int i = 0; i < cnt * 2; i++)
 	{
-		DUMMY();
+		//DUMMY();
+		__NOP();
 	}
 	return 0;
 }
 
 void dummy_fnc(void)
 {
-	int dummy = 1; // unused data
+	//int dummy = 1; // unused data
 	//if(dummy == 1) dummy=0;
 }
 
