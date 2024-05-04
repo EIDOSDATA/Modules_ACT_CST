@@ -1,0 +1,207 @@
+/*
+ * biz_uart.c
+ *
+ *  Created on: Mar 20, 2024
+ *      Author: admin
+ */
+
+#include "stdio.h"
+#include "stdint.h"
+
+#include "biz_uart.h"
+
+volatile uint8_t Rx_uart1[UART1_RX_MAXLEN];
+volatile uint16_t Rx_uart1_cnt;
+volatile uint16_t Rx_uart1_Pcnt;
+
+volatile uint8_t Rx_uart2[UART2_RX_MAXLEN];
+volatile uint16_t Rx_uart2_cnt;
+volatile uint16_t Rx_uart2_Pcnt;
+
+Uart_Rx_data Packet;
+
+
+void Uart_init(void)
+{
+	Packet.status = Uart_WAIT;
+	Packet.step = STX_MSB_Check;
+	Rx_uart2_cnt = 0;
+	Rx_uart2_Pcnt = 0;
+}
+
+uint16_t Uart_len_Check (void)
+{
+	//OvF 예외 처리 필요
+//	printf("calc = %d \r\n",Rx_uart2_cnt - Rx_uart2_Pcnt);
+	if(Packet.RecvTime + RECV_WAIT_TIME <= HAL_GetTick())
+	{
+		return Rx_uart2_cnt - Rx_uart2_Pcnt;
+	}
+	else
+	{
+		return 0;
+	}
+
+
+}
+
+
+uint8_t Uart_read(void)
+{
+	uint8_t data = Rx_uart2[Rx_uart2_Pcnt++];
+	if(Rx_uart2_Pcnt == UART2_RX_MAXLEN) Rx_uart2_Pcnt = 0;
+
+	return data;
+}
+
+volatile uint16_t Data_len;
+void Uart_Parsser(void)
+{
+	uint8_t data = 0;
+	if(Uart_len_Check()>= RX_MIN_LEN)
+	{
+//		printf("Loop in\r\n");
+		while(Rx_uart2_cnt != Rx_uart2_Pcnt)
+		{
+			HAL_Delay(10);
+			data = Uart_read();
+//			printf("data = 0x%02X\r\n",data);
+			switch (Packet.step)
+			{
+				case STX_MSB_Check:
+				{
+					if(data == 0xFF)
+					{
+						Packet.step = STX_LSB_Check;
+						Packet.status = Uart_ing;
+						Data_len = 0;
+					}
+					break;
+				}
+				case STX_LSB_Check:
+				{
+					if(data == 0x02)
+					{
+						Packet.step = ADDR_MSB_Check;
+					}
+					else
+					{
+						Packet.step = STX_MSB_Check;
+						Packet.status = Uart_WAIT;
+					}
+					break;
+				}
+				case ADDR_MSB_Check:
+				{
+					Packet.Addr = data<<8;
+					Packet.step = ADDR_LSB_Check;
+					break;
+				}
+				case ADDR_LSB_Check:
+				{
+					Packet.Addr |= data;
+					Packet.step = LEN_MSB_Check;
+					break;
+				}
+				case LEN_MSB_Check:
+				{
+					Packet.Data_len = data<<8;
+					Packet.step = LEN_LSB_Check;
+					break;
+				}
+				case LEN_LSB_Check:
+				{
+					Packet.Data_len |= data;
+					Packet.step = CMD_MSB_Check;
+					break;
+				}
+				case CMD_MSB_Check:
+				{
+					Packet.CMD = data<<8;
+					Packet.step = CMD_LSB_Check;
+					break;
+				}
+				case CMD_LSB_Check:
+				{
+					Packet.CMD |= data;
+
+					if(Packet.Data_len != 0)
+					{
+						Packet.step = DATA_Check;
+					}
+					else
+					{
+						Packet.step = ETX_MSB_Check;
+					}
+					break;
+				}
+
+				case DATA_Check:
+				{
+
+					Packet.data[Data_len++] = data;
+					if(Data_len == Packet.Data_len )
+					{
+						Packet.step = ETX_MSB_Check;
+					}
+					break;
+				}
+				case ETX_MSB_Check:
+				{
+					if(data == 0xFF)
+					{
+						Packet.step = ETX_LSB_Check;
+
+					}
+					else
+					{
+						Packet.step = STX_MSB_Check;
+						Packet.status = Uart_WAIT;
+					}
+					break;
+				}
+				case ETX_LSB_Check:
+				{
+					if(data == 0x03)
+					{
+						Packet.status = Uart_End;
+//						printf("Passer END \r\n");
+//						printf("Addr = 0x%04X \r\n",Packet.Addr);
+//						printf("Cmd = 0x%04X \r\n",Packet.CMD);
+//						printf("LEN = %d [dec]\r\n",Packet.Data_len);
+
+					}
+					else
+					{
+						Packet.status = Uart_WAIT;
+					}
+					Packet.step = STX_MSB_Check;
+					break;
+				}
+				default:
+				{
+					break;
+				}
+
+
+			}
+		}
+	}
+}
+
+
+
+void Uart_Buffer_Debug(void)
+{
+	if(Rx_uart2_cnt != Rx_uart2_Pcnt)
+	{
+		printf("Recv Packet = ");
+		while(Rx_uart2_cnt != Rx_uart2_Pcnt)
+		{
+			printf("%c ",Rx_uart2[Rx_uart2_Pcnt++]);
+			if(Rx_uart2_cnt == UART2_RX_MAXLEN)	Rx_uart2_cnt = 0;
+		}
+		printf("\t End \r\n");
+
+	}
+}

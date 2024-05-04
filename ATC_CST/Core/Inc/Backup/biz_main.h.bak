@@ -1,0 +1,23 @@
+/*
+ * biz_main.h
+ *
+ *  Created on: Mar 20, 2024
+ *      Author: admin
+ */
+
+#ifndef INC_BIZ_MAIN_H_
+#define INC_BIZ_MAIN_H_
+
+#define MY_ADDR 1
+
+
+
+//=============422 CMD LIST
+
+#define CMD_DISPENSE 		0x0000
+#define CMD_DISPENSE_CHK 	0x1000
+
+
+
+extern void biz_loop(void);
+#endif /* INC_BIZ_MAIN_H_ */
