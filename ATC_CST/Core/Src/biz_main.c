@@ -328,7 +328,7 @@ void Cmd_Runner(void)
 
 void Cst_setup(void)
 {
-	Cst.Addr = 0x0001;			//<-HardCoding
+	Cst.Addr = CST_HARDCODING_ADDR;			//<-HardCoding
 	Cst.Cur_status = STU_WAIT;
 
 	Uart_init();

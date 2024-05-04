@@ -35,17 +35,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_rnglists 00000dad  00000000  00000000  00020db8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00014ddd  00000000  00000000  00021b65  2**0
+ 16 .debug_macro  00014de3  00000000  00000000  00021b65  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00018b19  00000000  00000000  00036942  2**0
+ 17 .debug_line   00018b19  00000000  00000000  00036948  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0007533e  00000000  00000000  0004f45b  2**0
+ 18 .debug_str    00075359  00000000  00000000  0004f461  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000c4799  2**0
+ 19 .comment      00000043  00000000  00000000  000c47ba  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000459c  00000000  00000000  000c47dc  2**2
+ 20 .debug_frame  0000459c  00000000  00000000  000c4800  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000005c  00000000  00000000  000c8d78  2**0
+ 21 .debug_line_str 0000005c  00000000  00000000  000c8d9c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -920,9 +920,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
  80006b0:	40020008 	.word	0x40020008
 
 080006b4 <Motor_On>:
+uint32_t mean_ch2;
 uint32_t mean_ch3;
 
-#define DUMMY() dummy_fnc();
 
 void Motor_On(void)
 {
@@ -1933,7 +1933,7 @@ void Cst_setup(void)
  8000d68:	b590      	push	{r4, r7, lr}
  8000d6a:	b085      	sub	sp, #20
  8000d6c:	af02      	add	r7, sp, #8
-	Cst.Addr = 0x0001;			//<-HardCoding
+	Cst.Addr = CST_HARDCODING_ADDR;			//<-HardCoding
  8000d6e:	4b2e      	ldr	r3, [pc, #184]	@ (8000e28 <Cst_setup+0xc0>)
  8000d70:	2201      	movs	r2, #1
  8000d72:	801a      	strh	r2, [r3, #0]
